@@ -18,7 +18,7 @@ class MultimodalFusion(nn.Module):
         )    
     def forward(self, features, img_feat):
         """
-        features: [B, N, 6] Feature points + force information
+        features: [B, N, 7] Feature points + force information
         img_feat: [B, D_img] Image features
         """
         # Project to the same space
@@ -42,7 +42,7 @@ class MultimodalFusion(nn.Module):
         return fused
 
 class PositionalEncoding(nn.Module):
-    def __init__(self, d_model, max_len=100):
+    def __init__(self, d_model, max_len=1000):
         super(PositionalEncoding, self).__init__()
         pe = torch.zeros(max_len, d_model)
         position = torch.arange(0, max_len, dtype=torch.float).unsqueeze(1)
@@ -230,14 +230,11 @@ class PredictionHead(nn.Module):
         
         x = self.linear3(x)
         #x = self.tanh(x)  # Apply Tanh activation to limit output range to [-1,1]
-       
-        #x = self.hard_tanh(x)
-        #x = torch.stack([self.tanh(x[:, i]) for i in range(x.shape[1])], dim=1)
         return x
 
 class VisualServoTransformer(nn.Module):
     def __init__(self, 
-                 feature_dim=6,  
+                 feature_dim=7,  
                  end_pose_dim=6, 
                  hidden_dim=256, 
                  ff_dim=1024, 
